@@ -132,6 +132,11 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
     @callback
     def async_add_alarm_master(config: dict):
         """Add each entity as Alarm Control Panel."""
+        _LOGGER.warning(
+            "DEBUG async_add_alarm_master: entity_id=%s hass.data master=%s",
+            entity_id,
+            getattr(hass.data[const.DOMAIN].get("master"), "entity_id", None),
+        )
         entity_id = f"{PLATFORM}.{slugify(config['name'])}"
         new_unique_id = f"{const.DOMAIN}_master"
 
@@ -187,6 +192,16 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
             name=config["name"],
         )
         hass.data[const.DOMAIN]["master"] = alarm_entity
+        # DEBUG: log platform entity state before async_add_devices
+        from homeassistant.helpers import entity_platform as _ep
+        _current_platform = _ep.current_platform.get()
+        if _current_platform:
+            _LOGGER.warning(
+                "DEBUG before async_add_devices: platform entities=%s",
+                list(_current_platform.entities.keys()),
+            )
+        else:
+            _LOGGER.warning("DEBUG before async_add_devices: no current platform")
         async_add_devices([alarm_entity])
 
     unsub_master = async_dispatcher_connect(
