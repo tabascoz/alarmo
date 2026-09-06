@@ -132,13 +132,13 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
     @callback
     def async_add_alarm_master(config: dict):
         """Add each entity as Alarm Control Panel."""
+        entity_id = f"{PLATFORM}.{slugify(config['name'])}"
+        new_unique_id = f"{const.DOMAIN}_master"
         _LOGGER.warning(
-            "DEBUG async_add_alarm_master: entity_id=%s hass.data master=%s",
+            "DEBUG async_add_alarm_master called: entity_id=%s master_in_hass=%s",
             entity_id,
             getattr(hass.data[const.DOMAIN].get("master"), "entity_id", None),
         )
-        entity_id = f"{PLATFORM}.{slugify(config['name'])}"
-        new_unique_id = f"{const.DOMAIN}_master"
 
         entity_registry = er.async_get(hass)
         deleted_key = (PLATFORM, const.DOMAIN, new_unique_id)
