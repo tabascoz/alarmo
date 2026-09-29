@@ -1466,6 +1466,9 @@ class AlarmoMasterEntity(AlarmoBaseEntity):
                 return False
         if skip_code or res:
             # code has been validated or skip_code is True, proceed with disarm
+            if self._state == AlarmControlPanelState.DISARMED:
+                _LOGGER.debug("Master already disarmed, skipping disarm")
+                return True
             if not await super().async_alarm_disarm(
                 code=code, skip_code=True, context_id=context_id
             ):
